@@ -1,0 +1,37 @@
+﻿<div class="col col-12 col-md-4 col-lg-3 card menu-card">
+    <div class="card-header card-title h3 p-2 pb-3">
+        @Title
+    </div>
+    <div class=@($"card-body {CardBodyAlertStyleValue}")>
+        @if (ChildContent is null)
+        {
+            <p class="card-alert p-3">No content provided</p>
+        }
+        else
+        {
+            @ChildContent
+        }
+    </div>
+    <div class="card-footer p-2">
+        <button class="btn btn-outline-success">Learn more</button>
+        <button class="btn btn-outline-danger">Go back</button>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public required string Title { get; set; }
+
+    private string CardBodyAlertStyleValue = "";
+
+    protected override void OnInitialized()
+    {
+        if (ChildContent is null)
+        {
+            CardBodyAlertStyleValue = "bg-danger";
+        }
+    }
+}

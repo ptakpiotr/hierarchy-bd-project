@@ -1,0 +1,11 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "provider": "cdnjs",
+      "library": "p5.js@1.6.0",
+      "destination": "wwwroot/lib/p5.js/"
+    }
+  ]
+}

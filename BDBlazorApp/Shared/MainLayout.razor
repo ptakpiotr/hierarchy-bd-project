@@ -1,0 +1,19 @@
+﻿@inherits LayoutComponentBase
+
+<PageTitle>Projekt bazy danych - dane hierarchiczne</PageTitle>
+
+<div class="page">
+    <NavigationMenu IsFullScreen="isFullScreen" SetFullScreen="SetIsFullScreen" />
+    <main class="container-fluid" style="@($"margin-left:{(isFullScreen?150:0)}px")">
+        @Body
+    </main>
+</div>
+
+@code {
+    private bool isFullScreen = true;
+
+    public void SetIsFullScreen()
+    {
+        isFullScreen = !isFullScreen;
+    }
+}
