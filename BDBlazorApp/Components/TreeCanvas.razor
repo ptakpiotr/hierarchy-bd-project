@@ -1,26 +1,17 @@
-﻿@implements IDisposable
+﻿@typeparam TItem
+@implements IDisposable
 @inject IJSRuntime JS
 
-<h3>TreeCanvas</h3>
 <div id="tree-canvas"></div>
 
 @code {
-    private DotNetObjectReference<TreeCanvas>? treeCanvas;
+    private DotNetObjectReference<TreeCanvas<TItem>>? treeCanvas;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    public async Task SetTreeData(List<TItem> data)
     {
-        if (firstRender)
-        {
-            treeCanvas = DotNetObjectReference.Create(this);
+        treeCanvas = DotNetObjectReference.Create(this);
 
-            await JS.InvokeVoidAsync("renderTree", treeCanvas, "");
-        }
-    }
-
-    [JSInvokable]
-    public void GetHelloMessage(string passedName)
-    {
-        Console.WriteLine($"Hello, {passedName}!");
+        await JS.InvokeVoidAsync("renderTree", treeCanvas, data);
     }
 
     public void Dispose()

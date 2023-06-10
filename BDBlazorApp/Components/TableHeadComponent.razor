@@ -1,0 +1,30 @@
+﻿<h3>TableHeadComponent</h3>
+
+<thead>
+    @if (Columns is not null && Columns.Any())
+    {
+        <tr>
+            @foreach (ColumnDefinition col in Columns)
+            {
+                <th scope="col">
+                    @col.Name <span>@GetSortingMode(col)</span>
+                </th>
+            }
+        </tr>
+    }
+</thead>
+
+@code {
+    [Parameter]
+    public List<ColumnDefinition>? Columns { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Columns = Columns?.OrderBy(c => c.Order).ToList();
+    }
+
+    private string GetSortingMode(ColumnDefinition col)
+    {
+        return "";
+    }
+}

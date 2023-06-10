@@ -1,7 +1,32 @@
 ﻿@page "/tree/manage"
+@inject IFamilyService familyService
 
-<h3>Manage</h3>
+<h3>Zarządzaj</h3>
+
+Wybierz rodzinę:
+<DataBasePicker TItem="TreeModel" TId="int" Source="Tree" OptionRenderer="((t)=>t.Id.ToString())" OptionIdRetrieval="((t)=>t.Id)" OnSelectionChangeCallback="OnTreeChoice" />
+
+@if (family is null)
+{
+    <div class="alert alert-info">Wybierz rodzinę w celu zobaczenia wizualizacji</div>
+}
+
+<TreeCanvas @ref="Canvas" TItem="PersonModel" />
 
 @code {
+    private TreeCanvas<PersonModel>? Canvas;
+    private int familyId;
+    private TreeDTO family = new TreeDTO();
 
+    public async Task OnTreeChoice(string id)
+    {
+        familyId = int.Parse(id);
+
+        family = await familyService.GetFamily(familyId);
+
+        if (Canvas is not null)
+        {
+            await Canvas?.SetTreeData(family.Family);
+        }
+    }
 }

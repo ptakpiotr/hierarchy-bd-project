@@ -33,9 +33,7 @@ function sketchTree(v) {
                 y: setRandomPos(),
             });
         }
-        console.log("SETUP");
     }
-    console.log(people);
     v.draw = function () {
         v.background(0);
 
@@ -46,7 +44,7 @@ function sketchTree(v) {
 
             if (parents) {
                 for (let parent of parents) {
-                    if (parent.gender === "F") {
+                    if (parent.gender === "K") {
                         v.stroke(255, 0, 0);
                     } else {
                         v.stroke(0, 0, 255);
@@ -60,57 +58,23 @@ function sketchTree(v) {
         }
         for (let p of positions) {
             v.noStroke();
-            if (p.gender === "F") {
+            if (p.gender === "K") {
                 v.fill(255, 0, 0);
             } else {
                 v.fill(0, 0, 255);
             }
-            v.rect(p.x, p.y, 20, 20);
+            v.rect(p.x, p.y, 100, 20);
             v.fill(255);
-            v.text(p.name, p.x, p.y);
+            v.text(`${p.firstName} ${p.lastName}`, p.x, p.y);
         }
     }
 
 }
 
-window.renderTree = (dotNetHelper, data) => {
-    people = [
-        {
-            id: 1,
-            motherId: -1,
-            fatherId: -1,
-            name: "A",
-            gender: "M",
-        },
-        {
-            id: 2,
-            motherId: -1,
-            fatherId: -1,
-            name: "B",
-            gender: "F",
-        },
-        {
-            id: 3,
-            motherId: 1,
-            fatherId: 2,
-            name: "C",
-            gender: "F",
-        },
-        {
-            id: 4,
-            motherId: -1,
-            fatherId: -1,
-            name: "D",
-            gender: "M",
-        },
-        {
-            id: 5,
-            motherId: 3,
-            fatherId: 4,
-            name: "E",
-            gender: "F",
-        },
-    ];
-    dotNetHelper.invokeMethodAsync('GetHelloMessage', "ABC");
-    new p5(sketchTree, '#tree-canvas');
+window.renderTree = (_, data) => {
+    people = data;
+
+    if (people) {
+        new p5(sketchTree, '#tree-canvas');
+    }
 }
