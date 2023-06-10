@@ -1,13 +1,11 @@
-﻿<h3>TableHeadComponent</h3>
-
-<thead>
+﻿<thead>
     @if (Columns is not null && Columns.Any())
     {
         <tr>
             @foreach (ColumnDefinition col in Columns)
             {
                 <th scope="col">
-                    @col.Name <span>@GetSortingMode(col)</span>
+                    @col.Name.Humanize()
                 </th>
             }
         </tr>
@@ -21,10 +19,5 @@
     protected override void OnInitialized()
     {
         Columns = Columns?.OrderBy(c => c.Order).ToList();
-    }
-
-    private string GetSortingMode(ColumnDefinition col)
-    {
-        return "";
     }
 }

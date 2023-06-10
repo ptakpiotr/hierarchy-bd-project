@@ -4,7 +4,6 @@
     {
         public string Name { get; set; }
         public int Order { get; set; }
-        public bool EditMode { get; set; }
-        public SortingDefinition Sorting { get; set; }
+        public bool IsEditable { get; set; }
     }
 }

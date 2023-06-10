@@ -1,6 +1,6 @@
 ﻿@inject IFamilyService familyService
 @inject IDataGenerator dataGenerator
-@inject NavigationManager navigationManager;
+@inject NavigationManager navigationManager
 
 <h3>Dodaj członka rodziny</h3>
 
@@ -67,7 +67,7 @@ Wybierz rodzinę:
         person.FatherId = fatherGuid;
 
         await familyService.InsertPerson(person, familyId);
-        navigationManager.NavigateTo("/tree/add");
+        navigationManager.NavigateTo("/tree/add", true);
     }
 
     public async Task OnTreeChoice(string id)

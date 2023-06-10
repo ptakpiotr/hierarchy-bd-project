@@ -1,32 +1,117 @@
 ﻿@page "/tree/manage"
 @inject IFamilyService familyService
+@inject NavigationManager navigationManager
 
 <h3>Zarządzaj</h3>
 
 Wybierz rodzinę:
-<DataBasePicker TItem="TreeModel" TId="int" Source="Tree" OptionRenderer="((t)=>t.Id.ToString())" OptionIdRetrieval="((t)=>t.Id)" OnSelectionChangeCallback="OnTreeChoice" />
+<DataBasePicker TItem="TreeModel" TId="int" Source="Tree" OptionRenderer="((t)=>t.Id.ToString())"
+                OptionIdRetrieval="((t)=>t.Id)" OnSelectionChangeCallback="OnTreeChoice" />
 
 @if (family is null)
 {
     <div class="alert alert-info">Wybierz rodzinę w celu zobaczenia wizualizacji</div>
 }
+<div class="container-fluid">
+    <h5 class="m-1 p-2">Członkowie rodziny:</h5>
+    <TableComponent TItem="PersonModel" EditableProperty="@nameof(PersonModel.LastName)"
+                    Columns="columnDefinitions" Items="people" CheckEditability="CheckPersonEditable"
+                    SaveChangesCallback="SaveChanges" />
 
-<TreeCanvas @ref="Canvas" TItem="PersonModel" />
+    <h5 class="m-1 p-2">Wizualizacja:</h5>
+    <div class="row">
+        <div class="col-3"></div>
+
+        <div class="col-6">
+            <TreeCanvas @ref="Canvas" TItem="PersonModel" />
+        </div>
+
+        <div class="col-3">
+        </div>
+    </div>
+</div>
 
 @code {
     private TreeCanvas<PersonModel>? Canvas;
+
+    private List<PersonModel>? people;
+    private List<ColumnDefinition>? columnDefinitions;
     private int familyId;
     private TreeDTO family = new TreeDTO();
+
+    protected override void OnInitialized()
+    {
+        columnDefinitions = new List<ColumnDefinition>()
+        {
+            new ColumnDefinition()
+            {
+                Name=nameof(PersonModel.Id),
+                IsEditable = false,
+                Order = 1
+            },
+            new ColumnDefinition()
+            {
+                Name=nameof(PersonModel.FirstName),
+                IsEditable = false,
+                Order = 2
+            },
+            new ColumnDefinition()
+            {
+                Name=nameof(PersonModel.LastName),
+                IsEditable = true,
+                Order = 3
+            },
+            new ColumnDefinition()
+            {
+                Name=nameof(PersonModel.DateOfBirth),
+                IsEditable = false,
+                Order = 4
+            },
+            new ColumnDefinition()
+            {
+                Name=nameof(PersonModel.Gender),
+                IsEditable = false,
+                Order = 5
+            },
+            new ColumnDefinition()
+            {
+                Name=nameof(PersonModel.MotherId),
+                IsEditable = false,
+                Order = 6
+            },
+            new ColumnDefinition()
+            {
+                Name=nameof(PersonModel.FatherId),
+                IsEditable = false,
+                Order = 7
+            }
+        };
+    }
 
     public async Task OnTreeChoice(string id)
     {
         familyId = int.Parse(id);
 
         family = await familyService.GetFamily(familyId);
+        people = family.Family;
 
         if (Canvas is not null)
         {
             await Canvas?.SetTreeData(family.Family);
         }
+    }
+
+    public bool CheckPersonEditable(PersonModel person)
+    {
+        Guid[] parentGuids = people.Select(p => p.MotherId)
+            .Union(people.Select(p => p.FatherId)).ToArray();
+
+        return !parentGuids.Contains(person.Id);
+    }
+
+    public async Task SaveChanges(List<PersonModel> people)
+    {
+        await familyService.UpdateFamily(people, familyId);
+        navigationManager.NavigateTo("/tree/manage", true);
     }
 }

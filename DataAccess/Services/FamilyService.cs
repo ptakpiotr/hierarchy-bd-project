@@ -63,6 +63,20 @@ namespace DataAccess.Services
             await conn.UpdateXMLDataAsync(serializedData, "Tree", "Family", "/ArrayOfPerson", familyId);
         }
 
+        public async Task UpdateFamily(List<PersonModel> people, int familyId)
+        {
+            using IDbConnection conn = new SqlConnection(_configuration.GetConnectionString("MainConn"));
+
+            XmlSerializer serializer = new XmlSerializer(typeof(List<PersonModel>));
+
+            using StringWriter writer = new StringWriter();
+            serializer.Serialize(writer, people);
+
+            string serializedData = writer.ToString();
+
+            await conn.UpdateXMLDataWrapperAsync(serializedData, "Tree", "Family", familyId);
+        }
+
         public async Task RemoveElement(Guid personId)
         {
 

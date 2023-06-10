@@ -60,6 +60,16 @@ namespace DataAccess.Extensions
             await conn.ExecuteAsync(query, parameters);
         }
 
+        public static async Task UpdateXMLDataWrapperAsync<T>(this IDbConnection conn, T data, string tableName, string columnName, int id)
+        {
+            string query = @$"UPDATE {tableName} SET {columnName} = @data WHERE Id = {id};";
+
+            DynamicParameters parameters = new DynamicParameters();
+            parameters.Add("@data", data, DbType.Xml);
+
+            await conn.ExecuteAsync(query, parameters);
+        }
+
         public static T? ConvertDocumentToType<T>(this XmlDocument doc)
         {
             T? res = default;

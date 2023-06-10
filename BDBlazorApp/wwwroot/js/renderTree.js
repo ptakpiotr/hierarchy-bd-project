@@ -72,6 +72,8 @@ function sketchTree(v) {
 }
 
 window.renderTree = (_, data) => {
+    document.querySelector('#tree-canvas').innerHTML = "";
+
     people = data;
 
     if (people) {

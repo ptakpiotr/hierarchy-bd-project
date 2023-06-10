@@ -1,0 +1,80 @@
+﻿@typeparam TItem
+
+<tbody>
+    @if (Items is not null && Items.Any())
+    {
+        @foreach (TItem item in Items)
+        {
+            <tr>
+                @foreach (ColumnDefinition col in Columns)
+                {
+                    @if (col.IsEditable && isEditingEnabled)
+                    {
+                        <td>
+                            <input type="text" class="form-control" value="@typeof(TItem)?.GetProperty(col.Name)?.GetValue(item)"
+                            @onchange="@((e)=>{SetEditedValue(item, col.Name,e?.Value?.ToString());})" />
+                        </td>
+                    }
+                    else
+                    {
+                        <td style="min-width:100px">@typeof(TItem)?.GetProperty(col.Name)?.GetValue(item)</td>
+                    }
+                }
+
+                @if (!string.IsNullOrEmpty(EditableProperty))
+                {
+                    <td>
+                        <span class="oi oi-pencil" @onclick="SetEditMode"></span>
+                        @if (CheckEditability is not null && CheckEditability(item))
+                        {
+                            <span class="oi oi-delete" @onclick="()=>{DeleteValue(item);}"></span>
+                        }
+                    </td>
+                }
+            </tr>
+        }
+
+    }
+    else
+    {
+        <tr class="alert alert-danger">
+            Brak danych
+        </tr>
+    }
+</tbody>
+
+@code {
+    [Parameter]
+    public required List<ColumnDefinition> Columns { get; set; }
+
+    [Parameter]
+    public List<TItem>? Items { get; set; }
+
+    [Parameter]
+    public string? EditableProperty { get; set; }
+
+    [Parameter]
+    public Func<TItem, bool>? CheckEditability { get; set; }
+
+    private bool isEditingEnabled;
+
+    protected override void OnInitialized()
+    {
+        Columns = Columns.OrderBy(c => c.Order).ToList();
+    }
+
+    private void SetEditMode()
+    {
+        isEditingEnabled = !isEditingEnabled;
+    }
+
+    private void SetEditedValue(TItem item, string colName, string? newValue)
+    {
+        typeof(TItem)?.GetProperty(colName)?.SetValue(item, newValue);
+    }
+
+    private void DeleteValue(TItem item)
+    {
+        Items?.Remove(item);
+    }
+}

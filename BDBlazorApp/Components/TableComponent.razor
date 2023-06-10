@@ -1,14 +1,36 @@
 ﻿@typeparam TItem
 
-<h3>TableComponent</h3>
-
 <table class="table table-striped">
-    <TableHeadComponent />
-    <tbody>
-
-    </tbody>
+    <TableHeadComponent Columns="Columns" />
+    <TableBodyComponent @ref="tableBody" TItem="TItem" Columns="Columns" EditableProperty="EditableProperty"
+                        Items="Items" CheckEditability="CheckEditability" />
 </table>
 
-@code {
+@if (!string.IsNullOrEmpty(EditableProperty))
+{
+    <button class="btn btn-outline-primary" @onclick="SaveChanges">Zapisz zmiany</button>
+}
 
+@code {
+    [Parameter]
+    public required List<ColumnDefinition> Columns { get; set; }
+
+    [Parameter]
+    public List<TItem>? Items { get; set; }
+
+    [Parameter]
+    public string? EditableProperty { get; set; }
+
+    [Parameter]
+    public Func<TItem, bool>? CheckEditability { get; set; }
+
+    [Parameter]
+    public Func<List<TItem>, Task> SaveChangesCallback { get; set; }
+
+    private TableBodyComponent<TItem>? tableBody;
+
+    private async Task SaveChanges()
+    {
+        await SaveChangesCallback(tableBody?.Items);
+    }
 }
