@@ -1,0 +1,59 @@
+﻿@typeparam TId
+@typeparam TItem
+@inject IConfiguration configuration;
+
+<select @onchange="OnSelectionChange" class="form-select">
+    @if (Data is not null && Data.Any())
+    {
+        @foreach (TItem item in Data)
+        {
+            <option value="@OptionIdRetrieval(item)">@OptionRenderer(item)</option>
+        }
+    }
+</select>
+
+@code {
+    [Parameter]
+    public string Source { get; set; }
+
+    [Parameter]
+    public Func<IDbConnection, Task<IList<TItem>>>? OwnQuery { get; set; }
+
+    [Parameter]
+    public Func<TItem, string> OptionRenderer { get; set; }
+
+    [Parameter]
+    public Func<TItem, TId> OptionIdRetrieval { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnSelectionChangeCallback { get; set; }
+
+    private IList<TItem>? Data;
+
+    protected async override Task OnInitializedAsync()
+    {
+        await RefreshDataChoice();
+    }
+
+    private async Task OnSelectionChange(ChangeEventArgs e)
+    {
+        if (e.Value is not null)
+        {
+            await OnSelectionChangeCallback.InvokeAsync(e.Value.ToString());
+        }
+    }
+
+    internal async Task RefreshDataChoice()
+    {
+        using IDbConnection conn = new SqlConnection(configuration.GetConnectionString("MainConn"));
+
+        if (OwnQuery is null)
+        {
+            Data = await conn.ReadDataAsync<TItem>(Source);
+        }
+        else
+        {
+            Data = await OwnQuery(conn);
+        }
+    }
+}

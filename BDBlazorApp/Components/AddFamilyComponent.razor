@@ -1,0 +1,14 @@
+﻿@inject IFamilyService familyService
+@inject NavigationManager navManager
+
+<h3>Dodaj rodzinę</h3>
+
+<button type="submit" class="btn btn-info" @onclick="InsertFamily">Dodaj</button>
+
+@code {
+    private async Task InsertFamily()
+    {
+        await familyService.InsertFamily(new List<DataAccess.Models.PersonModel>());
+        navManager.NavigateTo("/tree/add", true);
+    }
+}

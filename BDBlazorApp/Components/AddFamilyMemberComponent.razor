@@ -1,0 +1,103 @@
+﻿@inject IFamilyService familyService
+@inject IDataGenerator dataGenerator
+@inject NavigationManager navigationManager;
+
+<h3>Dodaj członka rodziny</h3>
+
+Wybierz rodzinę:
+<DataBasePicker TItem="TreeModel" TId="int" Source="Tree" OptionRenderer="((t)=>t.Id.ToString())" OptionIdRetrieval="((t)=>t.Id)" OnSelectionChangeCallback="OnTreeChoice" />
+
+<EditForm Model="person" class="form" OnValidSubmit="SubmitForm">
+    <div class="mb-3">
+        <label for="firstName" class="form-label">Imię:</label>
+        <input type="text" id="firstName" class="form-control" @bind-value="person.FirstName" />
+    </div>
+
+    <div class="mb-3">
+        <label for="lastName" class="form-label">Nazwisko:</label>
+        <input type="text" id="lastName" class="form-control" @bind-value="person.LastName" />
+    </div>
+
+    <div class="mb-3">
+        <label for="dateOfBirth" class="form-label">Data urodzenia:</label>
+        <input type="date" id="dateOfBirth" class="form-control" max="@DateOnly.FromDateTime(DateTime.UtcNow).ToString("YYYY-MM-DD")" @bind-value="person.DateOfBirth" />
+    </div>
+
+    <div class="mb-3">
+        <label for="gender" class="form-label">Płeć:</label>
+        <input type="text" id="gender" class="form-control" @bind-value="person.Gender" />
+    </div>
+
+    <div class="mb-3">
+        <label for="mother" class="form-label">Mama:</label>
+        <DataBasePicker @ref="MotherInfo" TItem="string" TId="string" Source="" OwnQuery="RetrieveMotherInfo" OptionRenderer="t=>t" OptionIdRetrieval="t=>t" OnSelectionChangeCallback="OnMotherChoice" />
+    </div>
+
+    <div class="mb-3">
+        <label for="father" class="form-label">Tata:</label>
+        <DataBasePicker @ref="FatherInfo" TItem="string" TId="string" Source="" OwnQuery="RetrieveFatherInfo" OptionRenderer="t=>t" OptionIdRetrieval="t=>t" OnSelectionChangeCallback="OnFatherChoice" />
+    </div>
+
+    <button type="submit" class="btn btn-outline-success">Dodaj członka</button>
+    <button type="button" class="btn btn-outline-info" @onclick="GenerateRandomPerson">Wygeneruj</button>
+
+    <div class="text-danger">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+    </div>
+
+</EditForm>
+
+@code {
+    private DataAccess.Models.PersonModel person = new DataAccess.Models.PersonModel();
+
+    private int familyId;
+    private string? motherId;
+    private string? fatherId;
+
+    private DataBasePicker<string, string> MotherInfo = null!;
+    private DataBasePicker<string, string> FatherInfo = null!;
+
+    public async Task SubmitForm()
+    {
+        Guid.TryParse(motherId, out Guid motherGuid);
+        Guid.TryParse(fatherId, out Guid fatherGuid);
+
+        person.MotherId = motherGuid;
+        person.FatherId = fatherGuid;
+
+        await familyService.InsertPerson(person, familyId);
+        navigationManager.NavigateTo("/tree/add");
+    }
+
+    public async Task OnTreeChoice(string id)
+    {
+        familyId = int.Parse(id);
+        motherId = string.Empty;
+        fatherId = string.Empty;
+
+        await MotherInfo.RefreshDataChoice();
+        await FatherInfo.RefreshDataChoice();
+    }
+
+    public void OnMotherChoice(string id)
+    {
+        motherId = id;
+    }
+
+    public void OnFatherChoice(string id)
+    {
+        fatherId = id;
+    }
+
+    public async Task<IList<string>> RetrieveMotherInfo(IDbConnection conn) =>
+        await conn.ReadXMLValueAsync<string>("Tree", "@id", "/ArrayOfPerson/person", "NVARCHAR(MAX)", $"Id = {familyId}");
+
+    public async Task<IList<string>> RetrieveFatherInfo(IDbConnection conn) =>
+        await conn.ReadXMLValueAsync<string>("Tree", "@id", "/ArrayOfPerson/person", "NVARCHAR(MAX)", $"Id = {familyId}");
+
+    private void GenerateRandomPerson()
+    {
+        person = dataGenerator.GenerateRandomPerson();
+    }
+}

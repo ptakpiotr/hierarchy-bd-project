@@ -3,6 +3,7 @@ using DataAccess.Models;
 using Microsoft.Extensions.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Xml.Serialization;
 
 namespace DataAccess.Services
 {
@@ -19,7 +20,7 @@ namespace DataAccess.Services
         {
             using IDbConnection conn = new SqlConnection(_configuration.GetConnectionString("MainConn"));
 
-            List<TreeModel> data = await conn.ReadXMLDataAsync<TreeModel>("Tree").ConfigureAwait(false);
+            List<TreeModel> data = await conn.ReadDataAsync<TreeModel>("Tree").ConfigureAwait(false);
             List<TreeDTO> trees = new List<TreeDTO>();
 
             foreach (TreeModel t in data)
@@ -34,7 +35,7 @@ namespace DataAccess.Services
         {
             using IDbConnection conn = new SqlConnection(_configuration.GetConnectionString("MainConn"));
 
-            List<TreeModel> allData = await conn.ReadXMLDataWithConditionAsync<TreeModel, dynamic>("Tree", "id = @Id", new { Id = id })
+            List<TreeModel> allData = await conn.ReadDataWithConditionAsync<TreeModel, dynamic>("Tree", "id = @Id", new { Id = id })
                 .ConfigureAwait(false);
             TreeModel data = allData.FirstOrDefault();
 
@@ -46,6 +47,20 @@ namespace DataAccess.Services
             using IDbConnection conn = new SqlConnection(_configuration.GetConnectionString("MainConn"));
 
             await conn.SaveXMLDataAsync(people, "Tree", "Family");
+        }
+
+        public async Task InsertPerson(PersonModel person, int familyId)
+        {
+            using IDbConnection conn = new SqlConnection(_configuration.GetConnectionString("MainConn"));
+
+            XmlSerializer serializer = new XmlSerializer(typeof(PersonModel));
+
+            using StringWriter writer = new StringWriter();
+            serializer.Serialize(writer, person);
+
+            string serializedData = writer.ToString();
+
+            await conn.UpdateXMLDataAsync(serializedData, "Tree", "Family", "/ArrayOfPerson", familyId);
         }
 
         public async Task RemoveElement(Guid personId)

@@ -6,5 +6,6 @@ namespace DataAccess.Services
     {
         Task<List<TreeDTO>> GetFamilies();
         Task InsertFamily(List<PersonModel> people);
+        Task InsertPerson(PersonModel person, int familyId);
     }
 }
