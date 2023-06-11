@@ -19,6 +19,11 @@ Wybierz firmę:
     </div>
 
     <div class="mb-3">
+        <label for="post" class="form-label">Stanowisko:</label>
+        <EnumPicker TItem="Post" OnSelectionChangeCallback="OnPostChoice" />
+    </div>
+
+    <div class="mb-3">
         <label for="boss" class="form-label">Szef:</label>
         <DataBasePicker @ref="BossInfo" TItem="string" TId="string" Source="" OwnQuery="RetrieveBossInfo" OptionRenderer="t=>t" OptionIdRetrieval="t=>t" OnSelectionChangeCallback="OnBossChoice" />
     </div>
@@ -38,6 +43,7 @@ Wybierz firmę:
 
     private int companyId;
     private string? bossId;
+    private string? post;
 
     private DataBasePicker<string, string> BossInfo = null!;
 
@@ -46,6 +52,7 @@ Wybierz firmę:
         Guid.TryParse(bossId, out Guid bossGuid);
 
         employee.BossId = bossGuid;
+        employee.Post = post;
 
         await companyService.InsertEmployee(employee, companyId);
         navigationManager.NavigateTo("/company/add", true);
@@ -64,9 +71,14 @@ Wybierz firmę:
         bossId = id;
     }
 
+    public void OnPostChoice(string postVal)
+    {
+        post = postVal;
+    }
+
     public async Task<IList<string>> RetrieveBossInfo(IDbConnection conn) =>
         await conn.ReadXMLValueAsync<string>("Company", "@id", "/ArrayOfEmployee/employee", "NVARCHAR(MAX)",
-            $"Id = {companyId}");
+            $"Id = {companyId} AND c.value('@post','NVARCHAR(50)') IS NOT NULL AND c.value('@post','NVARCHAR(50)') != 'EMPLOYEE'");
 
 
     private void GenerateRandomEmployee()

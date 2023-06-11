@@ -100,7 +100,7 @@ namespace DataAccess.Services
             };
 
             return await conn.ReadXMLValuesAsync<CompanyReportTwo>("Company", "/ArrayOfEmployee/employee",
-                xPathMappings, $"Id = {companyId}");
+                xPathMappings, $"Id = {companyId} AND c.value('@post','NVARCHAR(50)') IS NOT NULL AND c.value('@post','NVARCHAR(50)') IN ('CHAIRMAN','VICE_CHAIRMAN')");
         }
     }
 }

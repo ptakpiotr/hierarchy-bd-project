@@ -20,5 +20,8 @@ namespace DataAccess.Models
 
         [XmlAttribute("bossId")]
         public Guid BossId { get; set; }
+
+        [XmlAttribute("post")]
+        public string Post { get; set; }
     }
 }
