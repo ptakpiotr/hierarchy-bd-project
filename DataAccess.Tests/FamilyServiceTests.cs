@@ -2,7 +2,6 @@
 using DataAccess.Services;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
-using System.Data.SqlClient;
 using Xunit;
 
 namespace DataAccess.Tests
@@ -55,7 +54,9 @@ namespace DataAccess.Tests
         [Fact]
         public async Task GetReportOneData_ShouldNotBeNull()
         {
-            await Assert.ThrowsAsync<SqlException>(async () => { await _familyService.GetReportOneData(); });
+            var data = await _familyService.GetReportOneData();
+
+            data.Should().NotBeNullOrEmpty();
         }
 
         [Fact]
