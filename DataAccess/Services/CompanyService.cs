@@ -40,7 +40,7 @@ namespace DataAccess.Services
         {
             using IDbConnection conn = new SqlConnection(_configuration.GetConnectionString("MainConn"));
 
-            List<CompanyModel> allData = await conn.ReadDataWithConditionAsync<CompanyModel, dynamic>("Tree", "id = @Id", new { Id = id })
+            List<CompanyModel> allData = await conn.ReadDataWithConditionAsync<CompanyModel, dynamic>("Company", "id = @Id", new { Id = id })
                 .ConfigureAwait(false);
             CompanyModel data = allData.FirstOrDefault();
 

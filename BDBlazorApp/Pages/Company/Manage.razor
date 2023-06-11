@@ -1,0 +1,77 @@
+﻿@page "/company/manage"
+@inject ICompanyService companyService
+@inject NavigationManager navigationManager
+
+<h3>Zarządzaj</h3>
+
+Wybierz firmę:
+<DataBasePicker TItem="CompanyModel" TId="int" Source="Company" OptionRenderer="((t)=>t.Id.ToString())"
+                OptionIdRetrieval="((t)=>t.Id)" OnSelectionChangeCallback="OnCompanyChoice" />
+
+@if (company is null)
+{
+    <div class="alert alert-info">Nie wybrano firmy</div>
+}
+<div class="container-fluid">
+    <h5 class="m-1 p-2">Członkowie firmy:</h5>
+    <TableComponent TItem="EmployeeModel" EditableProperty="@nameof(EmployeeModel.LastName)"
+                    Columns="columnDefinitions" Items="employees" CheckEditability="CheckCompanyEditable"
+                    SaveChangesCallback="SaveChanges" />
+</div>
+
+@code {
+    private List<EmployeeModel>? employees;
+    private List<ColumnDefinition>? columnDefinitions;
+    private int companyId;
+    private CompanyDTO company = new CompanyDTO();
+
+    protected override void OnInitialized()
+    {
+        columnDefinitions = new List<ColumnDefinition>()
+        {
+            new ColumnDefinition()
+            {
+                Name=nameof(EmployeeModel.Id),
+                IsEditable = false,
+                Order = 1
+            },
+            new ColumnDefinition()
+            {
+                Name=nameof(EmployeeModel.FirstName),
+                IsEditable = false,
+                Order = 2
+            },
+            new ColumnDefinition()
+            {
+                Name=nameof(EmployeeModel.LastName),
+                IsEditable = true,
+                Order = 3
+            },
+            new ColumnDefinition()
+            {
+                Name=nameof(EmployeeModel.BossId),
+                IsEditable = false,
+                Order = 4
+            }
+        };
+    }
+
+    public async Task OnCompanyChoice(string id)
+    {
+        companyId = int.Parse(id);
+
+        company = await companyService.GetCompany(companyId);
+        employees = company.Company;
+    }
+
+    public bool CheckCompanyEditable(EmployeeModel cm)
+    {
+        return true;
+    }
+
+    public async Task SaveChanges(List<EmployeeModel> people)
+    {
+        await companyService.UpdateCompany(people, companyId);
+        navigationManager.NavigateTo("/company/manage", true);
+    }
+}

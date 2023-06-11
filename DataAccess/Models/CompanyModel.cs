@@ -12,6 +12,11 @@ namespace DataAccess.Models
 
         public static implicit operator CompanyDTO(CompanyModel t)
         {
+            if (t is null)
+            {
+                return default;
+            }
+
             return new()
             {
                 Id = t.Id,
