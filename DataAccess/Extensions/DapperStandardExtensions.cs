@@ -1,5 +1,8 @@
 ﻿using Dapper;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DataAccess.Extensions
 {
@@ -17,6 +20,13 @@ namespace DataAccess.Extensions
             string insertCols = string.Join(",", columnNames);
 
             await conn.ExecuteAsync($"INSERT INTO {tableName}({insertCols}) VALUES(@data)", new { data });
+        }
+
+        public static async Task<List<T>> SelectStandardDataAsync<T>(this IDbConnection conn, string query) where T : class
+        {
+            IEnumerable<T> data = await conn.QueryAsync<T>(query);
+
+            return data.ToList();
         }
     }
 }

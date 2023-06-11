@@ -1,4 +1,6 @@
 ﻿using DataAccess.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DataAccess.Services
 {
@@ -9,5 +11,7 @@ namespace DataAccess.Services
         Task InsertFamily(List<PersonModel> people);
         Task InsertPerson(PersonModel person, int familyId);
         Task UpdateFamily(List<PersonModel> people, int familyId);
+        Task<List<PersonReportOne>> GetReportOneData();
+        Task<List<FamilyCountModel>> GetReportTwoData();
     }
 }

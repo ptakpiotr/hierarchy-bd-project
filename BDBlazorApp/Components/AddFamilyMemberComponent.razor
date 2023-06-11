@@ -20,7 +20,7 @@ Wybierz rodzinę:
 
     <div class="mb-3">
         <label for="dateOfBirth" class="form-label">Data urodzenia:</label>
-        <input type="date" id="dateOfBirth" class="form-control" max="@DateOnly.FromDateTime(DateTime.UtcNow).ToString("YYYY-MM-DD")" @bind-value="person.DateOfBirth" />
+        <input type="date" id="dateOfBirth" class="form-control" max="@DateTime.UtcNow.ToString("YYYY-MM-DD")" @bind-value="person.DateOfBirth" />
     </div>
 
     <div class="mb-3">
@@ -91,10 +91,12 @@ Wybierz rodzinę:
     }
 
     public async Task<IList<string>> RetrieveMotherInfo(IDbConnection conn) =>
-        await conn.ReadXMLValueAsync<string>("Tree", "@id", "/ArrayOfPerson/person", "NVARCHAR(MAX)", $"Id = {familyId}");
+        await conn.ReadXMLValueAsync<string>("Tree", "@id", "/ArrayOfPerson/person", "NVARCHAR(MAX)", 
+            $"Id = {familyId} AND C.value('@gender', 'NVARCHAR(2)') = 'K'");
 
     public async Task<IList<string>> RetrieveFatherInfo(IDbConnection conn) =>
-        await conn.ReadXMLValueAsync<string>("Tree", "@id", "/ArrayOfPerson/person", "NVARCHAR(MAX)", $"Id = {familyId}");
+        await conn.ReadXMLValueAsync<string>("Tree", "@id", "/ArrayOfPerson/person", "NVARCHAR(MAX)", 
+            $"Id = {familyId} AND C.value('@gender', 'NVARCHAR(2)') = 'M'");
 
     private void GenerateRandomPerson()
     {

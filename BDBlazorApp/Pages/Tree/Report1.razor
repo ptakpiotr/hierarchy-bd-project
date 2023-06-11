@@ -1,0 +1,47 @@
+﻿@page "/tree/report1"
+@inject IFamilyService familyService
+
+<h3>
+    Lista osób młodszych niż 2 lata
+</h3>
+
+<TableComponent TItem="PersonReportOne"
+                Columns="columnDefinitions" Items="reportOneData" />
+
+@code {
+    private List<PersonReportOne>? reportOneData;
+    private List<ColumnDefinition>? columnDefinitions;
+
+    protected override async Task OnInitializedAsync()
+    {
+        columnDefinitions = new List<ColumnDefinition>()
+        {
+            new ColumnDefinition()
+            {
+                Name=nameof(PersonModel.Id),
+                IsEditable = false,
+                Order = 1
+            },
+            new ColumnDefinition()
+            {
+                Name=nameof(PersonModel.FirstName),
+                IsEditable = false,
+                Order = 2
+            },
+            new ColumnDefinition()
+            {
+                Name=nameof(PersonModel.LastName),
+                IsEditable = false,
+                Order = 3
+            },
+            new ColumnDefinition()
+            {
+                Name=nameof(PersonModel.Gender),
+                IsEditable = false,
+                Order = 4
+            }
+        };
+
+        reportOneData = await familyService.GetReportOneData();
+    }
+}

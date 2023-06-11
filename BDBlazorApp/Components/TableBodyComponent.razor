@@ -23,6 +23,7 @@
 
                 @if (!string.IsNullOrEmpty(EditableProperty))
                 {
+
                     <td>
                         <span class="oi oi-pencil" @onclick="SetEditMode"></span>
                         @if (CheckEditability is not null && CheckEditability(item))
@@ -45,7 +46,7 @@
 
 @code {
     [Parameter]
-    public required List<ColumnDefinition> Columns { get; set; }
+    public List<ColumnDefinition>? Columns { get; set; }
 
     [Parameter]
     public List<TItem>? Items { get; set; }

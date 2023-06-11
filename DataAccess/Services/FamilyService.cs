@@ -1,8 +1,12 @@
 ﻿using DataAccess.Extensions;
 using DataAccess.Models;
 using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace DataAccess.Services
@@ -77,9 +81,34 @@ namespace DataAccess.Services
             await conn.UpdateXMLDataWrapperAsync(serializedData, "Tree", "Family", familyId);
         }
 
-        public async Task RemoveElement(Guid personId)
+        public async Task<List<PersonReportOne>> GetReportOneData()
         {
+            using IDbConnection conn = new SqlConnection(_configuration.GetConnectionString("MainConn"));
 
+            Dictionary<string, (string, string)> xPathMappings = new Dictionary<string, (string, string)>()
+            {
+                {"@id",("UNIQUEIDENTIFIER","Id") },
+                {"@firstName",("NVARCHAR(MAX)","FirstName") },
+                {"@lastName",("NVARCHAR(MAX)","LastName") },
+                {"@gender",("NVARCHAR(2)","Gender") }
+            };
+
+            return await conn.ReadXMLValuesAsync<PersonReportOne>("Tree", "/ArrayOfPerson/person",
+                xPathMappings, "C.value('@dateOfBirth','DATETIME') > DATEADD(YEAR,-2,GETDATE())");
+        }
+
+        public async Task<List<FamilyCountModel>> GetReportTwoData()
+        {
+            using IDbConnection conn = new SqlConnection(_configuration.GetConnectionString("MainConn"));
+
+            string query = @"SELECT COUNT(C.value('@id', 'NVARCHAR(MAX)')) as FamilyCount, Id as FamilyId
+		                        FROM
+			                        Tree
+		                        CROSS APPLY
+			                        Family.nodes('/ArrayOfPerson/person') AS T(C)
+		                        GROUP BY Id";
+
+            return await conn.SelectStandardDataAsync<FamilyCountModel>(query);
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace DataAccess.Models
+﻿using System.Collections.Generic;
+
+namespace DataAccess.Models
 {
     public class TreeDTO
     {

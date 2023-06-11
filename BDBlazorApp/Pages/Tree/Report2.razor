@@ -1,0 +1,35 @@
+﻿@page "/tree/report2"
+@inject IFamilyService familyService
+
+<h3>
+    Ilość osób per rodzina
+</h3>
+
+<TableComponent TItem="FamilyCountModel"
+                Columns="columnDefinitions" Items="reportTwoData" />
+
+@code {
+    private List<FamilyCountModel>? reportTwoData;
+    private List<ColumnDefinition>? columnDefinitions;
+
+    protected override async Task OnInitializedAsync()
+    {
+        columnDefinitions = new List<ColumnDefinition>()
+        {
+            new ColumnDefinition()
+            {
+                Name=nameof(FamilyCountModel.FamilyId),
+                IsEditable = false,
+                Order = 1
+            },
+            new ColumnDefinition()
+            {
+                Name=nameof(FamilyCountModel.FamilyCount),
+                IsEditable = false,
+                Order = 2
+            }
+        };
+
+        reportTwoData = await familyService.GetReportTwoData();
+    }
+}
