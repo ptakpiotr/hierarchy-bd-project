@@ -26,9 +26,9 @@ namespace DataAccess.Services
             return employeeFaker.Generate();
         }
 
-        public List<EmployeeModel> GenerateRandomCompany()
+        public List<EmployeeModel> GenerateRandomCompany(int min = 10, int max = 15)
         {
-            return employeeFaker.GenerateBetween(10, 15);
+            return employeeFaker.GenerateBetween(min, max);
         }
     }
 }

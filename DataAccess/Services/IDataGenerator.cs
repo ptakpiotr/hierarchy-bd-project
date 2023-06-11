@@ -5,7 +5,7 @@ namespace DataAccess.Services
 {
     public interface IDataGenerator
     {
-        List<EmployeeModel> GenerateRandomCompany();
+        List<EmployeeModel> GenerateRandomCompany(int min = 10, int max = 15);
         EmployeeModel GenerateRandomEmployee();
         PersonModel GenerateRandomPerson();
     }
