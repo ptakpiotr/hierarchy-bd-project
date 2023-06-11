@@ -20,7 +20,7 @@ namespace DataAccess.Extensions
                                 FROM
                                     {tableName}
                                 CROSS APPLY
-                                    Family.nodes('{xPathQueryNode}') AS T(C)
+                                    {tableName}.nodes('{xPathQueryNode}') AS T(C)
                                 {(!string.IsNullOrEmpty(condition) ? $"WHERE {condition}" : string.Empty)}
             ";
 
@@ -35,7 +35,7 @@ namespace DataAccess.Extensions
                                 FROM
                                     {tableName}
                                 CROSS APPLY
-                                    Family.nodes('{xPathQueryNode}') AS T(C)
+                                    {tableName}.nodes('{xPathQueryNode}') AS T(C)
                                 {(!string.IsNullOrEmpty(condition) ? $"WHERE {condition}" : string.Empty)}
             ";
 

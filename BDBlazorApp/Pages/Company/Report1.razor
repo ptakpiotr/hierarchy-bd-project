@@ -1,0 +1,51 @@
+﻿@page "/company/report1"
+@inject ICompanyService companyService
+
+<h3>
+    Hierarchia osób w firmie
+</h3>
+
+Wybierz firmę:
+<DataBasePicker TItem="CompanyModel" TId="int" Source="Company" OptionRenderer="((t)=>t.Id.ToString())" OptionIdRetrieval="((t)=>t.Id)" OnSelectionChangeCallback="OnCompanyChoice" />
+
+<TableComponent TItem="CompanyReportOne"
+                Columns="columnDefinitions" Items="companyOneData" />
+
+@code {
+    private List<CompanyReportOne>? companyOneData;
+    private List<ColumnDefinition>? columnDefinitions;
+
+    private int companyId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        columnDefinitions = new List<ColumnDefinition>()
+        {
+            new ColumnDefinition()
+            {
+                Name=nameof(CompanyReportOne.FirstName),
+                IsEditable = false,
+                Order = 1
+            },
+            new ColumnDefinition()
+            {
+                Name=nameof(CompanyReportOne.LastName),
+                IsEditable = false,
+                Order = 2
+            },
+            new ColumnDefinition()
+            {
+                Name=nameof(CompanyReportOne.Level),
+                IsEditable = false,
+                Order = 3
+            }
+        };
+    }
+
+    public async Task OnCompanyChoice(string id)
+    {
+        companyId = int.Parse(id);
+
+        companyOneData = await companyService.GetReportOneData(companyId);
+    }
+}

@@ -12,14 +12,27 @@ namespace DataAccess.Extensions
         {
             string[]? columnNames = columns;
 
-            if (columnNames is null)
+            if (columnNames is null || !columnNames.Any())
             {
                 columnNames = typeof(T).GetProperties().Select(p => p.Name).Where(v => v != "Id").ToArray();
             }
 
-            string insertCols = string.Join(",", columnNames);
+            string insertCols = string.Join(",", columnNames.Select(c => c));
+            string insertValues = string.Join(",", columnNames.Select(c => $@"'{typeof(T).GetProperty(c).GetValue(data)
+                .ToString().Replace("'", "")}'"));
 
-            await conn.ExecuteAsync($"INSERT INTO {tableName}({insertCols}) VALUES(@data)", new { data });
+            string query = $"INSERT INTO {tableName}({insertCols}) VALUES({insertValues})";
+
+            await conn.ExecuteAsync(query);
+        }
+
+        public static async Task<List<T>> ExecuteFunctionAsync<T, U>(this IDbConnection conn, string functionName, U parameter)
+        {
+            string query = $"SELECT * FROM {functionName}({parameter})";
+
+            IEnumerable<T> data = await conn.QueryAsync<T>(query);
+
+            return data.ToList();
         }
 
         public static async Task<List<T>> SelectStandardDataAsync<T>(this IDbConnection conn, string query) where T : class

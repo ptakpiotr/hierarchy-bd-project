@@ -1,0 +1,19 @@
+﻿@using System.Xml
+@inject ICompanyService companyService
+@inject IDataGenerator dataGenerator
+@inject NavigationManager navManager
+
+<h3>Dodaj firmę</h3>
+
+<button type="submit" class="btn btn-info" @onclick="InsertCompany">Dodaj</button>
+
+@code {
+    private async Task InsertCompany()
+    {
+        var data = dataGenerator.GenerateRandomCompany();
+        
+        await companyService.InsertEmployees(data);
+
+        navManager.NavigateTo("/company/add", true);
+    }
+}

@@ -24,6 +24,7 @@ namespace BDBlazorApp
 
             services.AddSingleton<IDataGenerator, DataGenerator>();
             services.AddScoped<IFamilyService, FamilyService>();
+            services.AddScoped<ICompanyService, CompanyService>();
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {

@@ -1,0 +1,76 @@
+﻿@inject ICompanyService companyService
+@inject IDataGenerator dataGenerator
+@inject NavigationManager navigationManager
+
+<h3>Dodaj pracownika</h3>
+
+Wybierz firmę:
+<DataBasePicker TItem="CompanyModel" TId="int" Source="Company" OptionRenderer="((t)=>t.Id.ToString())" OptionIdRetrieval="((t)=>t.Id)" OnSelectionChangeCallback="OnCompanyChoice" />
+
+<EditForm Model="employee" class="form" OnValidSubmit="SubmitForm">
+    <div class="mb-3">
+        <label for="firstName" class="form-label">Imię:</label>
+        <input type="text" id="firstName" class="form-control" @bind-value="employee.FirstName" />
+    </div>
+
+    <div class="mb-3">
+        <label for="lastName" class="form-label">Nazwisko:</label>
+        <input type="text" id="lastName" class="form-control" @bind-value="employee.LastName" />
+    </div>
+
+    <div class="mb-3">
+        <label for="boss" class="form-label">Szef:</label>
+        <DataBasePicker @ref="BossInfo" TItem="string" TId="string" Source="" OwnQuery="RetrieveBossInfo" OptionRenderer="t=>t" OptionIdRetrieval="t=>t" OnSelectionChangeCallback="OnBossChoice" />
+    </div>
+
+    <button type="submit" class="btn btn-outline-success">Dodaj pracownika</button>
+    <button type="button" class="btn btn-outline-info" @onclick="GenerateRandomEmployee">Wygeneruj</button>
+
+    <div class="text-danger">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+    </div>
+
+</EditForm>
+
+@code {
+    private EmployeeModel employee = new EmployeeModel();
+
+    private int companyId;
+    private string? bossId;
+
+    private DataBasePicker<string, string> BossInfo = null!;
+
+    public async Task SubmitForm()
+    {
+        Guid.TryParse(bossId, out Guid bossGuid);
+
+        employee.BossId = bossGuid;
+
+        await companyService.InsertEmployee(employee, companyId);
+        navigationManager.NavigateTo("/company/add", true);
+    }
+
+    public async Task OnCompanyChoice(string id)
+    {
+        companyId = int.Parse(id);
+        bossId = string.Empty;
+
+        await BossInfo.RefreshDataChoice();
+    }
+
+    public void OnBossChoice(string id)
+    {
+        bossId = id;
+    }
+
+    public async Task<IList<string>> RetrieveBossInfo(IDbConnection conn) =>
+        await conn.ReadXMLValueAsync<string>("Company", "@id", "/ArrayOfEmployee/employee", "NVARCHAR(MAX)",
+            $"Id = {companyId}");
+
+
+    private void GenerateRandomEmployee()
+    {
+        employee = dataGenerator.GenerateRandomEmployee();
+    }
+}
