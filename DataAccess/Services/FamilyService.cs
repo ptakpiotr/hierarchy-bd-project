@@ -94,7 +94,7 @@ namespace DataAccess.Services
             };
 
             return await conn.ReadXMLValuesAsync<PersonReportOne>("Tree", "/ArrayOfPerson/person",
-                xPathMappings, "C.value('@dateOfBirth','DATETIME') > DATEADD(YEAR,-2,GETDATE())");
+                xPathMappings, "C.value('@dateOfBirth','DATETIME') > DATEADD(YEAR,-2,GETDATE())", "Family");
         }
 
         public async Task<List<FamilyCountModel>> GetReportTwoData()

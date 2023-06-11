@@ -11,7 +11,8 @@ namespace DataAccess.Extensions
 {
     public static class DapperXMLExtensions
     {
-        public static async Task<List<T>> ReadXMLValuesAsync<T>(this IDbConnection conn, string tableName, string xPathQueryNode, Dictionary<string, (string, string)> xPathRetrievalOpts, string? condition = default)
+        public static async Task<List<T>> ReadXMLValuesAsync<T>(this IDbConnection conn, string tableName, string xPathQueryNode, Dictionary<string, (string, string)> xPathRetrievalOpts,
+            string? condition = default, string? xmlColumnName = default)
         {
             string xPathRetrievalExpr = string.Join(",", xPathRetrievalOpts
                 .Select(x => $"C.value('{x.Key}','{x.Value.Item1}') as {x.Value.Item2}"));
@@ -20,7 +21,7 @@ namespace DataAccess.Extensions
                                 FROM
                                     {tableName}
                                 CROSS APPLY
-                                    {tableName}.nodes('{xPathQueryNode}') AS T(C)
+                                    {(!string.IsNullOrEmpty(xmlColumnName) ? xmlColumnName : tableName)}.nodes('{xPathQueryNode}') AS T(C)
                                 {(!string.IsNullOrEmpty(condition) ? $"WHERE {condition}" : string.Empty)}
             ";
 
@@ -29,13 +30,14 @@ namespace DataAccess.Extensions
             return res.ToList();
         }
 
-        public static async Task<List<T>> ReadXMLValueAsync<T>(this IDbConnection conn, string tableName, string xPathQueryRetrieval, string xPathQueryNode, string dbType, string? condition = default)
+        public static async Task<List<T>> ReadXMLValueAsync<T>(this IDbConnection conn, string tableName, string xPathQueryRetrieval,
+            string xPathQueryNode, string dbType, string? condition = default, string? xmlColumnName = default)
         {
             string query = @$"SELECT C.value('{xPathQueryRetrieval}', '{dbType}')
                                 FROM
                                     {tableName}
                                 CROSS APPLY
-                                    {tableName}.nodes('{xPathQueryNode}') AS T(C)
+                                    {(!string.IsNullOrEmpty(xmlColumnName) ? xmlColumnName : tableName)}.nodes('{xPathQueryNode}') AS T(C)
                                 {(!string.IsNullOrEmpty(condition) ? $"WHERE {condition}" : string.Empty)}
             ";
 

@@ -92,11 +92,11 @@ Wybierz rodzinę:
 
     public async Task<IList<string>> RetrieveMotherInfo(IDbConnection conn) =>
         await conn.ReadXMLValueAsync<string>("Tree", "@id", "/ArrayOfPerson/person", "NVARCHAR(MAX)", 
-            $"Id = {familyId} AND C.value('@gender', 'NVARCHAR(2)') = 'K'");
+            $"Id = {familyId} AND C.value('@gender', 'NVARCHAR(2)') = 'K'", "Family");
 
     public async Task<IList<string>> RetrieveFatherInfo(IDbConnection conn) =>
         await conn.ReadXMLValueAsync<string>("Tree", "@id", "/ArrayOfPerson/person", "NVARCHAR(MAX)", 
-            $"Id = {familyId} AND C.value('@gender', 'NVARCHAR(2)') = 'M'");
+            $"Id = {familyId} AND C.value('@gender', 'NVARCHAR(2)') = 'M'", "Family");
 
     private void GenerateRandomPerson()
     {
