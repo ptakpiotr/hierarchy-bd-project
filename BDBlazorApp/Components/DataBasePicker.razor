@@ -1,5 +1,5 @@
 ﻿@typeparam TId
-@typeparam TItem
+@typeparam TItem 
 @inject IConfiguration configuration;
 
 <select @onchange="OnSelectionChange" class="form-select">
@@ -54,6 +54,11 @@
         else
         {
             Data = await OwnQuery(conn);
+        }
+
+        if (Data is not null && Data.Any())
+        {
+            await OnSelectionChangeCallback.InvokeAsync(OptionRenderer(Data.FirstOrDefault()!));
         }
     }
 }

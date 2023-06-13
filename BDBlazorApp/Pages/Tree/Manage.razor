@@ -38,6 +38,7 @@ Wybierz rodzinę:
     private List<ColumnDefinition>? columnDefinitions;
     private int familyId;
     private TreeDTO family = new TreeDTO();
+    private bool jsInteropAvailable = false;
 
     protected override void OnInitialized()
     {
@@ -88,6 +89,19 @@ Wybierz rodzinę:
         };
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            jsInteropAvailable = true;
+
+            if (Canvas is not null && jsInteropAvailable && (family.Family?.Any() ?? false))
+            {
+                await Canvas?.SetTreeData(family.Family);
+            }
+        }
+    }
+
     public async Task OnTreeChoice(string id)
     {
         familyId = int.Parse(id);
@@ -95,7 +109,7 @@ Wybierz rodzinę:
         family = await familyService.GetFamily(familyId);
         people = family.Family;
 
-        if (Canvas is not null)
+        if (Canvas is not null && jsInteropAvailable)
         {
             await Canvas?.SetTreeData(family.Family);
         }

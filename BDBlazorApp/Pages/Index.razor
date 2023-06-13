@@ -1,4 +1,14 @@
 ﻿@page "/"
 
-<a href="/tree">Drzewo genealogiczne</a>
-<a href="/company">Firma</a>
+<div class="row">
+    <MenuCardComponent Title="Drzewo" MoreUrl="/tree" BackUrl="/">
+        <div class="card-img">
+            <img src="https://images.unsplash.com/photo-1523712999610-f77fbcfc3843?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80" style="width:100%" alt="Tree" />
+        </div>
+    </MenuCardComponent>
+    <MenuCardComponent Title="Firma" MoreUrl="/company" BackUrl="/">
+        <div class="card-img">
+            <img src="https://images.unsplash.com/photo-1599747645972-73c841de6e9e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80" style="width:100%" alt="Company" />
+        </div>
+    </MenuCardComponent>
+</div>
