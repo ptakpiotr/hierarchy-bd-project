@@ -1,11 +1,14 @@
-﻿<thead>
+﻿@using Microsoft.Extensions.Localization;
+@inject IStringLocalizer<SharedResource> localizer
+
+<thead>
     @if (Columns is not null && Columns.Any())
     {
         <tr>
             @foreach (ColumnDefinition col in Columns)
             {
                 <th scope="col">
-                    @col.Name.Humanize()
+                    @(!string.IsNullOrEmpty(localizer[$"{col.Name}"]?.Value) ? localizer[$"{col.Name}"] : col.Name.Humanize())
                 </th>
             }
         </tr>
