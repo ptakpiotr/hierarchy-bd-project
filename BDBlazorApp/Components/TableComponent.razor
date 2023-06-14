@@ -3,10 +3,10 @@
 <table class="table table-striped">
     <TableHeadComponent Columns="Columns" />
     <TableBodyComponent @ref="tableBody" TItem="TItem" Columns="Columns" EditableProperty="@EditableProperty"
-                        Items="Items" CheckEditability="CheckEditability" />
+                        Items="Items" CheckEditability="CheckEditability" IsEditable="IsEditable" />
 </table>
 
-@if (!string.IsNullOrEmpty(EditableProperty))
+@if (!string.IsNullOrEmpty(EditableProperty) && ShowSaveChanges)
 {
     <button class="btn btn-outline-primary" @onclick="SaveChanges">Zapisz zmiany</button>
 }
@@ -26,6 +26,12 @@
 
     [Parameter]
     public Func<List<TItem>, Task> SaveChangesCallback { get; set; }
+
+    [Parameter]
+    public bool IsEditable { get; set; } = true;
+
+    [Parameter]
+    public bool ShowSaveChanges { get; set; } = true;
 
     private TableBodyComponent<TItem>? tableBody;
 

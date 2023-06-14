@@ -14,9 +14,11 @@ Wybierz firmę:
 }
 <div class="container-fluid">
     <h5 class="m-1 p-2">Członkowie firmy:</h5>
-    <TableComponent TItem="EmployeeModel" EditableProperty="@nameof(EmployeeModel.LastName)"
-                    Columns="columnDefinitions" Items="employees" CheckEditability="CheckCompanyEditable"
-                    SaveChangesCallback="SaveChanges" />
+    <CascadingValue Name="DeleteItemCallback" Value="DeleteItem" TValue="Func<EmployeeModel,Task>">
+        <TableComponent TItem="EmployeeModel" EditableProperty="@nameof(EmployeeModel.LastName)"
+                        Columns="columnDefinitions" Items="employees" CheckEditability="CheckCompanyEditable"
+                        SaveChangesCallback="SaveChanges" IsEditable="@false" ShowSaveChanges="@false" />
+    </CascadingValue>
 </div>
 
 @code {
@@ -77,7 +79,12 @@ Wybierz firmę:
 
     public async Task SaveChanges(List<EmployeeModel> people)
     {
-        await companyService.UpdateCompany(people, companyId);
+        navigationManager.NavigateTo("/company/manage", true);
+    }
+
+    public async Task DeleteItem(EmployeeModel employee)
+    {
+        await companyService.UpdateCompany(employee, companyId);
         navigationManager.NavigateTo("/company/manage", true);
     }
 }

@@ -12,6 +12,6 @@ namespace DataAccess.Services
         Task<List<CompanyReportTwo>> GetReportTwoData(int companyId);
         Task InsertEmployee(EmployeeModel employee, int companyId);
         Task InsertEmployees(List<EmployeeModel> employees);
-        Task UpdateCompany(List<EmployeeModel> employees, int companyId);
+        Task UpdateCompany(EmployeeModel em, int companyId);
     }
 }

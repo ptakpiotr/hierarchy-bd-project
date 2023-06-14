@@ -41,5 +41,10 @@ namespace DataAccess.Extensions
 
             return data.ToList();
         }
+
+        public static async Task ExecuteStoredProcedure<T>(this IDbConnection conn, string procedureName, T parameters)
+        {
+            await conn.ExecuteAsync(procedureName, parameters, commandType: CommandType.StoredProcedure);
+        }
     }
 }

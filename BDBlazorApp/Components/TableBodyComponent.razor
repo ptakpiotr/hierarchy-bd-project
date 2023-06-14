@@ -25,10 +25,15 @@
                 {
 
                     <td>
-                        <span class="oi oi-pencil" @onclick="SetEditMode"></span>
+                        @if (IsEditable)
+                        {
+                            <span class="oi oi-pencil" @onclick="SetEditMode"></span>
+                        }
                         @if (CheckEditability is not null && CheckEditability(item))
                         {
-                            <span class="oi oi-delete" @onclick="()=>{DeleteValue(item);}"></span>
+                            <span class="oi oi-delete" @onclick="(async ()=>{
+                                await DeleteValue(item);
+                            })"></span>
                         }
                     </td>
                 }
@@ -57,6 +62,12 @@
     [Parameter]
     public Func<TItem, bool>? CheckEditability { get; set; }
 
+    [Parameter]
+    public bool IsEditable { get; set; }
+
+    [CascadingParameter(Name = "DeleteItemCallback")]
+    public Func<TItem, Task>? DeleteItemCallback { get; set; }
+
     private bool isEditingEnabled;
 
     protected override void OnInitialized()
@@ -74,8 +85,12 @@
         typeof(TItem)?.GetProperty(colName)?.SetValue(item, newValue);
     }
 
-    private void DeleteValue(TItem item)
+    private async Task DeleteValue(TItem item)
     {
         Items?.Remove(item);
+        if (DeleteItemCallback is not null)
+        {
+            await DeleteItemCallback(item);
+        }
     }
 }

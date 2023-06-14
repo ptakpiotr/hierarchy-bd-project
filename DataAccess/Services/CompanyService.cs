@@ -68,18 +68,10 @@ namespace DataAccess.Services
             await conn.UpdateXMLDataAsync(serializedData, "Company", "Company", "/ArrayOfEmployee", companyId);
         }
 
-        public async Task UpdateCompany(List<EmployeeModel> employees, int companyId)
+        public async Task UpdateCompany(EmployeeModel em, int companyId)
         {
             using IDbConnection conn = new SqlConnection(_configuration.GetConnectionString("MainConn"));
-
-            XmlSerializer serializer = new XmlSerializer(typeof(List<EmployeeModel>));
-
-            using StringWriter writer = new StringWriter();
-            serializer.Serialize(writer, employees);
-
-            string serializedData = writer.ToString();
-
-            await conn.UpdateXMLDataWrapperAsync(serializedData, "Company", "Company", companyId);
+            await conn.ExecuteStoredProcedure("sp_Delete_EmployeesWithNoBoss", new { bossId = em.Id.ToString(), companyId });
         }
 
         public async Task<List<CompanyReportOne>> GetReportOneData(int companyId)
